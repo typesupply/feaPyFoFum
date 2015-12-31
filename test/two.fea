@@ -1,0 +1,10 @@
+feature calt {
+	sub a by b;
+	# >>>
+	# for name in font.keys():
+	#     if name.endswith(".alt"):
+	#         print writer.formatSubstitution(name.split(".")[0], name)
+	# <<<
+} calt;
+
+include(three.fea);
