@@ -8,9 +8,37 @@ I don't know about you, but my glyph sets change frequently during development. 
 
 Furthermore, when developing extremely complex features (ie fancy swashes) I have been using Python scripts to do the actual .fea compilation for years. The code in those scripts is often 90% shorter and 90,000,000% more readable than the compiled .fea code. This workflow works really, really well until I have to start adding static features (ie a simple `locl`). Then I have to use cumbersome ways to combine the static and the automatic. This new method of embedding the Python code within the .fea allows these to be seamlessly combined. Simple `locl` AND complex `cswh` in the same file!
 
+# Usage
+
+To encorporate this into your build scripts, import the `compileFeatures` function and use it like this:
+
+```python
+import os
+from feaPyFoFum import compileFeatures
+
+font = CurrentFont()
+
+# compile the dynamic features
+originalFeatures = font.features.text
+font.features.text = compileFeatures(
+    originalFeatures,
+    font,
+    compileReferencedFiles=True
+)
+
+# generate the binary
+path = os.path.splitext(font.path)[0] + ".otf"
+font.generate(path, "otf")
+
+# restore the original features
+font.features.text = originalFeatures
+```
+
+This snippet will compile the features, put them in the font, generate an OTF-CFF and restore the original features. If any external files are referenced with `include` statements, those files will be compiled to new files (same location and file name, but a "-c" will be added to the file name) and the include statements will be redirected to the new files.
+
 # Python Code Blocks
 
-The beginning of a code block is indicated with `# >>>` and `# <<<` indicates the end of a block. Each line between these must begin with a `#` forllowed by a space. Any amount of whitespace before the `#` is allowed. The code blocks can be freely mixed within regular .fea code.
+The beginning of a code block is indicated with `# >>>` and `# <<<` indicates the end of a block. Each line between these must begin with a `#` followed by a space. Any amount of whitespace before the `#` is allowed. The code blocks can be freely mixed within regular .fea code.
 
 The codeblocks will have two objects availble by default:
 
