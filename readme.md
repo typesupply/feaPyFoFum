@@ -28,7 +28,7 @@ languagesystem latn dflt;
 # for name in font.glyphOrder:
 #     if name.endswith(".uc"):
 #         caseWriter.substitution(name.split(".")[0], name)
-# caseWriter.write()
+# print writer.write()
 # <<<
 
 include(Blah-kern.fea);
