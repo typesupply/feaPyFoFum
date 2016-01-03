@@ -179,6 +179,11 @@ This snippet will compile the features, put them in the font, generate an OTF-CF
     - The identifier system seems to be going haywire and inserting unnecessary blank lines.
 * Test cases.
 * Add commandline tool.
+* Could code within a .fea line be supported?
+	- Example: `pos zero.num fraction' <#> print font["zero.num"].width <# 0 0 0>;`
+	- This would be executed before code blocks are executed.
+	- The problem that I'm trying to solve is that sometimes the writer API is cumbersome when only a small value needs to be changed in some relatively static code.
+	- This would break backwards compatibility with .fea since it doesn't support inline comments.
 * Write better documentation.
 	- How to use as a module.
 	- Writer API
