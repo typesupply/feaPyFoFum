@@ -306,13 +306,13 @@ class FeaSyntaxWriter(object):
         # need to be applied to all rules
         needContextualMarkers = False
         for item in self._content:
-            if item["identifier"] == "substitution":
+            if "backtrack" in item:
                 if item["backtrack"] is not None or item["lookahead"] is not None:
                     needContextualMarkers = True
                     break
         if needContextualMarkers:
             for item in self._content:
-                if item["identifier"] == "substitution":
+                if "backtrack" in item:
                     if item["backtrack"] is None:
                         item["backtrack"] = []
                     if item["lookahead"] is None:
@@ -639,13 +639,10 @@ class FeaSyntaxWriter(object):
 
     # substitution
 
-    def formatSubstitution(self, target, substitution, backtrack=None, lookahead=None, choice=False):
+    def _formatContextTarget(self, target, backtrack, lookahead):
         if isinstance(target, basestring):
             target = [target]
-        if isinstance(substitution, basestring):
-            substitution = [substitution]
         needContextMarker = backtrack is not None or lookahead is not None
-        # backtrack + target + lookahead
         fullTarget = []
         if backtrack:
             backtrack = self._flattenSequence(backtrack)
@@ -658,7 +655,14 @@ class FeaSyntaxWriter(object):
             lookahead = self._flattenSequence(lookahead)
             fullTarget.append(lookahead)
         fullTarget = " ".join(fullTarget)
+        return fullTarget
+
+
+    def formatSubstitution(self, target, substitution, backtrack=None, lookahead=None, choice=False):
+        fullTarget = self._formatContextTarget(target, backtrack, lookahead)
         # substitution
+        if isinstance(substitution, basestring):
+            substitution = [substitution]
         if substitution is not None:
             if choice:
                 substitution = self._flattenClass(substitution)
@@ -728,3 +732,110 @@ class FeaSyntaxWriter(object):
             lookahead=lookahead,
             choice=False
         )
+
+    # position single
+
+    def formatPositionValue(self, value):
+        if isinstance(value, basestring):
+            return value
+        return "<%s %s %s %s>" % value
+
+    def _formatPositionBasic(self, target, value, backtrack, lookahead, enumerate=False):
+        fullTarget = self._formatContextTarget(target, backtrack, lookahead)
+        if value is not None:
+            value = self.formatPositionValue(value)
+        if enumerate:
+            return "enum pos {target} {value};".format(
+                target=fullTarget,
+                value=value
+            )
+        elif value is None:
+            return "ignore pos {target};".format(
+                target=fullTarget
+            )
+        else:
+            return "pos {target} {value};".format(
+                target=fullTarget,
+                value=value
+            )
+
+    def formatPositionSingle(self, target, value, backtrack=None, lookahead=None):
+        return self._formatPositionBasic(target, value, backtrack, lookahead)
+
+    def positionSingle(self, target, value, backtrack=None, lookahead=None):
+        if isinstance(target, basestring):
+            target = [target]
+        d = dict(
+            identifier="positionSingle",
+            target=target,
+            value=value,
+            backtrack=backtrack,
+            lookahead=lookahead
+        )
+        self._content.append(d)
+
+    def _positionSingle(self, target, value, backtrack=None, lookahead=None):
+        text = self._handleBreakBefore("positionSingle")
+        text.append(
+            self.formatPositionSingle(
+                target,
+                value,
+                backtrack=backtrack,
+                lookahead=lookahead
+            )
+        )
+        self._indentText(text)
+        self._identifierStack.append("positionSingle")
+        return text
+
+    # ignore position single
+
+    def formatIgnorePositionSingle(self, target, backtrack=None, lookahead=None):
+        return self.formatPositionSingle(
+            target=target,
+            backtrack=backtrack,
+            lookahead=lookahead
+        )
+
+    def ignorePositionSingle(self, target, backtrack=None, lookahead=None):
+        self.positionSingle(
+            target=target,
+            value=None,
+            backtrack=backtrack,
+            lookahead=lookahead
+        )
+
+    # position pair
+
+    def formatPositionPair(self, target, backtrack=None, lookahead=None, enumerate=False):
+        return self._formatPositionBasic(target, value, backtrack, lookahead, enumerate)
+
+    def positionPair(self, target, value, backtrack=None, lookahead=None, enumerate=False):
+        d = dict(
+            identifier="positionPair",
+            target=target,
+            value=value,
+            backtrack=backtrack,
+            lookahead=lookahead,
+            enumerate=enumerate
+        )
+        self._content.append(d)
+
+    def _positionPair(self, target, value, backtrack=None, lookahead=None, enumerate=False):
+        text = self._handleBreakBefore("positionPair")
+        text.append(
+            self.formatPositionPair(
+                target,
+                value,
+                backtrack=backtrack,
+                lookahead=lookahead,
+                enumerate=enumerate
+            )
+        )
+        self._indentText(text)
+        self._identifierStack.append("positionPair")
+        return text
+
+    # subtable
+
+
