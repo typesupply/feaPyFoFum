@@ -386,11 +386,11 @@ class FeaSyntaxWriter(object):
         )
         self._content.append(d)
 
-    def _comment(self, comment):
+    def _blankLine(self, comment):
         text = self._handleBreakBefore("blankLine")
-        text.append(comment)
+        text.append("")
         self._indentText(text)
-        self._identifierStack.append("comment")
+        self._identifierStack.append("blankLine")
         return text
 
     # comment
