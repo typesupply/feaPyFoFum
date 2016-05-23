@@ -1,9 +1,9 @@
 feature calt {
 	sub a by b;
 	# >>>
-	# for name in font.keys():
+	# for name in sorted(font.keys()):
 	#     if name.endswith(".alt"):
-	#         print writer.formatSubstitution(name.split(".")[0], name)
+	#         print(writer.formatSubstitution(name.split(".")[0], name))
 	# <<<
 } calt;
 

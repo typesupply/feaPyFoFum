@@ -1,7 +1,7 @@
 # >>>
 # featureWriter = writer.feature("aalt")
 # alternates = {}
-# for name in font.keys():
+# for name in sorted(font.keys()):
 # 	if "." not in name:
 # 		continue
 # 	base = name.split(".")[0]
@@ -10,9 +10,9 @@
 # 	if base not in alternates:
 # 		alternates[base] = []
 # 	alternates[base].append(name)
-# for name, alts in alternates.items():
+# for name, alts in sorted(alternates.items()):
 # 	featureWriter.substitution(name, sorted(alts), choice=True)
-# print writer.write()
+# print(writer.write())
 # <<<
 
 feature kern {

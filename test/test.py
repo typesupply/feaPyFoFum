@@ -1,3 +1,4 @@
+from __future__ import unicode_literals, print_function
 import os
 import shutil
 from defcon import Font
@@ -35,7 +36,7 @@ languagesystem DFLT dflt;
 # lookupWriter = featureWriter.lookup("Lookup2")
 # lookupWriter.substitution("a", "a.alt")
 #
-# print writer.write()
+# print(writer.write())
 # <<<
 
 include(two.fea);
@@ -50,7 +51,7 @@ languagesystem latn dflt;
 # for name in font.glyphOrder:
 #     if name.endswith(".uc"):
 #         caseWriter.substitution(name.split(".")[0], name)
-# print writer.write()
+# print(writer.write())
 # <<<
 
 include(Blah-kern.fea);
@@ -68,7 +69,7 @@ languagesystem latn dflt;
 #     dict(text="Blah3", platform=1, script=2, language=3)
 # )
 # ss01Writer.substitution("a", "a.alt")
-# print writer.write()
+# print(writer.write())
 # <<<
 
 include(Blah-kern.fea);
@@ -89,6 +90,6 @@ font.save(path)
 
 try:
 	font.features.text = compileFeatures(font.features.text, font, verbose=False, compileReferencedFiles=True)
-	print font.features.text
+	print(font.features.text)
 finally:
 	shutil.rmtree(path)
