@@ -56,6 +56,24 @@ languagesystem latn dflt;
 include(Blah-kern.fea);
 """
 
+text = """
+languagesystem DFLT dflt;
+languagesystem latn dflt;
+
+# >>>
+# ss01Writer = writer.feature("ss01")
+# ss01Writer.stylisticSetNames(
+#     dict(text="Blah1"),
+#     dict(text="Blah2", platform=1),
+#     dict(text="Blah3", platform=1, script=2, language=3)
+# )
+# ss01Writer.substitution("a", "a.alt")
+# print writer.write()
+# <<<
+
+include(Blah-kern.fea);
+"""
+
 font = Font()
 font.features.text = text
 for name in "abcdefghijklmnopqrstuvwxyz":

@@ -837,4 +837,38 @@ class FeaSyntaxWriter(object):
 
     # subtable
 
+    # stylistic set 
 
+    def formatStylisticSetNames(self, *names):
+        lines = ["featureNames {"]
+        for name in names:
+            text = name["text"]
+            platform = name.get("platform")
+            script = name.get("script")
+            language = name.get("language")
+            line = ["name"]
+            if platform is not None:
+                line.append(str(platform))
+                if script is not None:
+                    line.append(str(script))
+                    line.append(str(language))
+            line.append(u'\"%s\"' % text)
+            line = self._whitespace + " ".join(line) + ";"
+            lines.append(line)
+        lines.append("};")
+        text = "\n".join(lines)
+        return text
+
+    def stylisticSetNames(self, *names):
+        d = dict(
+            identifier="stylisticSetNames",
+            names=names
+        )
+        self._content.append(d)
+
+    def _stylisticSetNames(self, names):
+        text = self._handleBreakBefore("stylisticSetNames")
+        text.extend(self.formatStylisticSetNames(*names).splitlines())
+        self._indentText(text)
+        self._identifierStack.append("stylisticSetNames")
+        return text
