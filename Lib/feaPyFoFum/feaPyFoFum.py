@@ -36,7 +36,9 @@ def compileFeatures(text, font, verbose=False, compileReferencedFiles=False):
             verbose=verbose
         )[0]
     else:
-        relativePath = os.path.dirname(font.path)
+        relativePath = None
+        if font.path:
+            relativePath = os.path.dirname(font.path)
         text, referencedFiles = _compileFeatureText(
             text,
             font,
