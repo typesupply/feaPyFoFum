@@ -1,11 +1,12 @@
+from fontTools.misc.py23 import *
 import os
 import sys
 import traceback
-from cStringIO import StringIO
 import re
 
 
-class FeaPyFoFumError(Exception): pass
+class FeaPyFoFumError(Exception):
+    pass
 
 
 # ------------
@@ -55,6 +56,7 @@ def compileFeatures(text, font, verbose=False, compileReferencedFiles=False):
             )
     return text
 
+
 # ------------------
 # .fea File Creation
 # ------------------
@@ -82,6 +84,7 @@ def _compileFeatureText(text, font, relativePath=None, verbose=False, recursionD
     # compile
     text = _executeFeatureText(text, font, verbose=verbose)
     return text, referencedFiles
+
 
 def _compileReferencedFeatureFile(inPath, outPath, relativePath, font, verbose=False, recursionDepth=0):
     """
@@ -115,6 +118,7 @@ def _compileReferencedFeatureFile(inPath, outPath, relativePath, font, verbose=F
             recursionDepth=recursionDepth + 1
         )
 
+
 def _getReferencedFileMapping(text):
     """
     Get a mapping of referenced files in the text.
@@ -146,6 +150,7 @@ def _getReferencedFileMapping(text):
         )
     return mapping
 
+
 def _findReferenceFiles(text):
     """
     Find all include statements in the text.
@@ -159,12 +164,14 @@ def _findReferenceFiles(text):
     )
     return pattern.findall(text)
 
+
 def _stripComments(text):
     """
     Strip comments from the text.
     """
     stripped = [line.split("#")[0] for line in text.splitlines()]
     return "\n".join(stripped)
+
 
 # --------------
 # .fea Execution
@@ -179,10 +186,10 @@ def _executeFeatureText(text, font, verbose=False):
     processed = []
     codeBlock = None
     for lineNumber, line in enumerate(text.splitlines()):
-        l = line.strip()
-        if l == "# >>>":
+        stripeddLine = line.strip()
+        if stripeddLine == "# >>>":
             codeBlock = []
-        elif l == "# <<<":
+        elif stripeddLine == "# <<<":
             processed += _executeCodeBlock(codeBlock, font, verbose)
             codeBlock = None
         elif codeBlock is not None:
@@ -190,6 +197,7 @@ def _executeFeatureText(text, font, verbose=False):
         else:
             processed.append(line)
     return "\n".join(processed)
+
 
 def _executeCodeBlock(codeBlock, font, verbose):
     """
@@ -220,6 +228,7 @@ def _executeCodeBlock(codeBlock, font, verbose):
         lines.append(constantIndent + line)
     return lines
 
+
 def _extractCodeFromCodeBlock(codeBlock):
     """
     Extract the executable lines, whitespace type
@@ -247,6 +256,7 @@ def _extractCodeFromCodeBlock(codeBlock):
     lines = "\n".join(lines)
     return lines, whitespace, constantIndent
 
+
 def _executeCodeInNamespace(code, namespace):
     """
     Execute the code in the given namespace.
@@ -261,23 +271,24 @@ def _executeCodeInNamespace(code, namespace):
         sys.stderr = tempStderr
         try:
             code = compile(code, "", "exec", 0)
-        except:
+        except Exception:
             traceback.print_exc(0)
         else:
             try:
-                exec code in namespace
-            except:
+                exec(code, namespace)
+            except Exception:
                 etype, value, tb = sys.exc_info()
                 if tb.tb_next is not None:
                     tb = tb.tb_next
                 traceback.print_exception(etype, value, tb)
                 etype = value = tb = None
     finally:
-       sys.stdout = saveStdout
-       sys.stderr = saveStderr
+        sys.stdout = saveStdout
+        sys.stderr = saveStderr
     output = tempStdout.getvalue()
     errors = tempStderr.getvalue()
     return output, errors
+
 
 # -----------
 # .fea Writer
@@ -658,7 +669,6 @@ class FeaSyntaxWriter(object):
         fullTarget = " ".join(fullTarget)
         return fullTarget
 
-
     def formatSubstitution(self, target, substitution, backtrack=None, lookahead=None, choice=False):
         fullTarget = self._formatContextTarget(target, backtrack, lookahead)
         # substitution
@@ -808,7 +818,7 @@ class FeaSyntaxWriter(object):
 
     # position pair
 
-    def formatPositionPair(self, target, backtrack=None, lookahead=None, enumerate=False):
+    def formatPositionPair(self, target, value, backtrack=None, lookahead=None, enumerate=False):
         return self._formatPositionBasic(target, value, backtrack, lookahead, enumerate)
 
     def positionPair(self, target, value, backtrack=None, lookahead=None, enumerate=False):
@@ -839,7 +849,7 @@ class FeaSyntaxWriter(object):
 
     # subtable
 
-    # stylistic set 
+    # stylistic set
 
     def formatStylisticSetNames(self, *names):
         lines = ["featureNames {"]

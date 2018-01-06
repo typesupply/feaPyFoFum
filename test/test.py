@@ -1,3 +1,5 @@
+from __future__ import print_function, absolute_import
+
 import os
 import shutil
 from defcon import Font
@@ -50,7 +52,7 @@ languagesystem latn dflt;
 # for name in font.glyphOrder:
 #     if name.endswith(".uc"):
 #         caseWriter.substitution(name.split(".")[0], name)
-# print writer.write()
+# print(writer.write())
 # <<<
 
 include(Blah-kern.fea);
@@ -68,7 +70,7 @@ languagesystem latn dflt;
 #     dict(text="Blah3", platform=1, script=2, language=3)
 # )
 # ss01Writer.substitution("a", "a.alt")
-# print writer.write()
+# print(writer.write())
 # <<<
 
 include(Blah-kern.fea);
@@ -77,10 +79,10 @@ include(Blah-kern.fea);
 font = Font()
 font.features.text = text
 for name in "abcdefghijklmnopqrstuvwxyz":
-	font.newGlyph(name)
-	font.newGlyph(name + ".alt")
-	font.newGlyph(name + ".alt1")
-	font.newGlyph(name + ".alt2")
+    font.newGlyph(name)
+    font.newGlyph(name + ".alt")
+    font.newGlyph(name + ".alt1")
+    font.newGlyph(name + ".alt2")
 font.newGlyph("at.uc")
 font.newGlyph("exclamdown.uc")
 font.newGlyph("questiondown.uc")
@@ -88,7 +90,7 @@ path = os.path.join(os.path.dirname(__file__), "font.ufo")
 font.save(path)
 
 try:
-	font.features.text = compileFeatures(font.features.text, font, verbose=False, compileReferencedFiles=True)
-	print font.features.text
+    font.features.text = compileFeatures(font.features.text, font, verbose=False, compileReferencedFiles=True)
+    print(font.features.text)
 finally:
-	shutil.rmtree(path)
+    shutil.rmtree(path)
