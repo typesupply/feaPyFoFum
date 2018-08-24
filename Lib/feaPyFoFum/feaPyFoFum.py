@@ -1,8 +1,10 @@
 from fontTools.misc.py23 import *
+from __future__ import unicode_literals
 import os
 import sys
 import traceback
 import re
+from fontTools.misc.py23 import basestring, StringIO, open
 
 
 class FeaPyFoFumError(Exception):
@@ -94,9 +96,8 @@ def _compileReferencedFeatureFile(inPath, outPath, relativePath, font, verbose=F
         # XXX silently fail here?
         return
     # compile and write this file
-    f = open(inPath, "rb")
-    text = f.read()
-    f.close()
+    with open(inPath, "r") as f:
+        text = f.read()
     text, referencedFiles = _compileFeatureText(
         text,
         font,
@@ -104,9 +105,8 @@ def _compileReferencedFeatureFile(inPath, outPath, relativePath, font, verbose=F
         verbose=verbose,
         recursionDepth=recursionDepth
     )
-    f = open(outPath, "wb")
-    f.write(text)
-    f.close()
+    with open(outPath, "w") as f:
+        f.write(text)
     # recurse through the referenced files
     for referenceInPath, referenceOutPath in referencedFiles:
         _compileReferencedFeatureFile(
@@ -242,7 +242,7 @@ def _extractCodeFromCodeBlock(codeBlock):
         stripped = line.strip()
         if stripped != "#":
             if not stripped.startswith("# "):
-                raise FeaPyFoFumError(u"Non-code was found in a code block: %s" % stripped)
+                raise FeaPyFoFumError("Non-code was found in a code block: %s" % stripped)
             ws, line = line.split("# ", 1)
             if whitespace is None:
                 whitespace = ws
