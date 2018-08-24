@@ -1,5 +1,6 @@
-from fontTools.misc.py23 import *
 from __future__ import unicode_literals
+
+from fontTools.misc.py23 import *
 import os
 import sys
 import traceback
