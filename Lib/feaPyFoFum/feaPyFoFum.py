@@ -899,6 +899,116 @@ class FeaSyntaxWriter(object):
         self._identifierStack.append("positionPair")
         return text
 
+    # position mark to base
+
+    def formatPositionMarkToBase(self, target, anchor, markClass):
+        return self._formatPositionMarkBasic("base", target, [(anchor, markClass)])
+
+    def positionMarkToBase(self, target, anchor, markClass):
+        """
+        Ouput a GPOS LookupType 4 rule
+        >>> position base [a e o u] <anchor 250 450> mark @TOP_MARKS;
+
+        'target' argument should be a glyph name of a list of glyph names
+        'anchor' should be a tuples representing anchor position (x, y)
+        'markClass' should be a string
+        """
+        d = dict(
+            identifier="positionMarkToBase",
+            target=target,
+            anchor=anchor,
+            markClass=markClass,
+        )
+        self._content.append(d)
+
+    def _positionMarkToBase(self, target, anchor, markClass):
+        text = self._handleBreakBefore("positionMarkToBase")
+        text.append(
+            self.formatPositionMarkToBase(
+                target,
+                anchor,
+                markClass
+            )
+        )
+        self._indentText(text)
+        self._identifierStack.append("positionMarkToBase")
+        return text
+
+    # position mark to mark
+
+    def formatPositionMarkToMark(self, target, anchor, markClass):
+        return self._formatPositionMarkBasic("mark", target, [(anchor, markClass)])
+
+    def positionMarkToMark(self, target, anchor, markClass):
+        """
+        Ouput a GPOS LookupType 6 rule
+        >>> position mark hamzabelow <anchor 0 -30O> mark @AR_BOTTOM_MARKS;
+
+        'target' argument should be a glyph name of a list of glyph names
+        'anchor' should be a tuples representing anchor position (x, y)
+        'markClass' should be a string
+        """
+        d = dict(
+            identifier="positionMarkToMark",
+            target=target,
+            anchor=anchor,
+            markClass=markClass,
+        )
+        self._content.append(d)
+
+    def _positionMarkToMark(self, target, anchor, markClass):
+        text = self._handleBreakBefore("positionMarkToMark")
+        text.append(
+            self.formatPositionMarkToMark(
+                target,
+                anchor,
+                markClass
+            )
+        )
+        self._indentText(text)
+        self._identifierStack.append("positionMarkToMark")
+        return text
+
+    # position mark to ligature
+
+    def formatPositionMarkToLigature(self, target, anchor_data):
+        return self._formatPositionMarkBasic("ligature", target, anchor_data)
+
+    def positionMarkToLigature(self, target, anchor_data):
+        """
+        Ouput a GPOS LookupType 5 rule
+        >>>  position ligature lam.init_alef.fina <anchor 500 800> mark @AR_TOP_MARKS ligComponent <anchor 100 800> mark @AR_TOP_MARKS;
+
+        'target' argument should be a glyph name of a list of glyph names
+        'anchor_data' should be a list of tuples representing anchor positions and the associtated markClass like [((x, y), @markClassName)]
+        """
+        d = dict(
+            identifier="positionMarkToLigature",
+            target=target,
+            anchor_data=anchor_data
+        )
+        self._content.append(d)
+
+    def _positionMarkToLigature(self, target, anchor_data):
+        text = self._handleBreakBefore("positionMarkToLigature")
+        text.append(
+            self.formatPositionMarkToLigature(
+                target,
+                anchor_data
+            )
+        )
+        self._indentText(text)
+        self._identifierStack.append("positionMarkToLigature")
+        return text
+
+    def _formatPositionMarkBasic(self, kind, target, anchor_data):
+        marks = ["{anchor} mark {markClass}".format(anchor=self._formatAnchorDefinition(anchor), markClass=markClass) for anchor, markClass in anchor_data]
+        return "position {kind} {target} {marks};".format(
+            kind=kind,
+            target=self._flattenClass(target),
+            marks=" ligComponent ".join(marks)
+        )
+
     # subtable
 
     # stylistic set
