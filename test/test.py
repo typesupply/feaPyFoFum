@@ -1,4 +1,5 @@
-from __future__ import unicode_literals, print_function
+from __future__ import print_function, absolute_import, unicode_literals
+
 import os
 import shutil
 from defcon import Font
@@ -78,10 +79,10 @@ include(Blah-kern.fea);
 font = Font()
 font.features.text = text
 for name in "abcdefghijklmnopqrstuvwxyz":
-	font.newGlyph(name)
-	font.newGlyph(name + ".alt")
-	font.newGlyph(name + ".alt1")
-	font.newGlyph(name + ".alt2")
+    font.newGlyph(name)
+    font.newGlyph(name + ".alt")
+    font.newGlyph(name + ".alt1")
+    font.newGlyph(name + ".alt2")
 font.newGlyph("at.uc")
 font.newGlyph("exclamdown.uc")
 font.newGlyph("questiondown.uc")
@@ -89,7 +90,7 @@ path = os.path.join(os.path.dirname(__file__), "font.ufo")
 font.save(path)
 
 try:
-	font.features.text = compileFeatures(font.features.text, font, verbose=False, compileReferencedFiles=True)
-	print(font.features.text)
+    font.features.text = compileFeatures(font.features.text, font, verbose=False, compileReferencedFiles=True)
+    print(font.features.text)
 finally:
-	shutil.rmtree(path)
+    shutil.rmtree(path)
