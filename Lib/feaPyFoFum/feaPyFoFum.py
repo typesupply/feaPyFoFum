@@ -556,6 +556,37 @@ class FeaSyntaxWriter(object):
         self._identifierStack.append("classDefinition")
         return text
 
+    # markClass definition
+
+    def formatMarkClassDefinition(self, members, anchor, name):
+        return "markClass {members} {anchor} {name};".format(
+            members=self._flattenClass(members),
+            anchor=self._formatAnchorDefinition(anchor),
+            name=name,
+        )
+
+    def markClassDefinition(self, members, anchor, name):
+        d = dict(
+            identifier="markClassDefinition",
+            members=members,
+            anchor=anchor,
+            name=name,
+        )
+        self._content.append(d)
+
+    def _markClassDefinition(self, members, anchor, name):
+        text = self._handleBreakBefore("markClassDefinition")
+        text.append(self.formatMarkClassDefinition(members, anchor, name))
+        self._indentText(text)
+        self._identifierStack.append("markClassDefinition")
+        return text
+
+    def _formatAnchorDefinition(self, anchor):
+        return "<anchor {x} {y}>".format(
+            x=int(anchor[0]),
+            y=int(anchor[1]),
+        )
+
     # feature
 
     def feature(self, name):
