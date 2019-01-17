@@ -639,6 +639,26 @@ class FeaSyntaxWriter(object):
         self._identifierStack.append("lookup")
         return text
 
+    def lookupflag(self, flags):
+        """
+        flags should be a iterable with one or several items from
+        ["RightToLeft", "IgnoreBaseGlyphs", "IgnoreLigatures", "IgnoreMarks", MarkAttachmentType <glyph class name>, UseMarkFilteringSet <glyph class name>]
+        """
+        # XXX all lookup flags need to be regestered at once for a given lookup
+        # XXX maybe this could be more flexible and different flags could be added att diferent times (?)
+        d = dict(
+            identifier="lookupflag",
+            flags=flags
+        )
+        self._content.append(d)
+
+    def _lookupflag(self, flags):
+        text = self._handleBreakBefore("lookupflag")
+        text.append("lookupflag %s;" % " ".join(flags))
+        self._indentText(text)
+        self._identifierStack.append("lookupflag")
+        return text
+
     # feature reference
 
     def formatFeatureReference(self, name):
