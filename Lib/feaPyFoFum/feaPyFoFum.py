@@ -1011,6 +1011,19 @@ class FeaSyntaxWriter(object):
 
     # subtable
 
+    def subtable(self):
+        d = dict(
+            identifier="subtable",
+        )
+        self._content.append(d)
+
+    def _subtable(self):
+        text = self._handleBreakBefore("subtable")
+        text.append("subtable;")
+        self._indentText(text)
+        self._identifierStack.append("subtable")
+        return text
+
     # stylistic set
 
     def formatStylisticSetNames(self, *names):
