@@ -187,9 +187,7 @@ This snippet will compile the features, put them in the font, generate an OTF-CF
 	- lookupflag
 	- positioning
 	- use extension
-	- ssXX names
 	- probably other stuff
-* Use the same namespace for executing all FeaPy within the same file. This should allow variables to pass from code block to code block.
 * In the namespace, insert all `writer.format*` methods as `format*` function lookalikes to make calling them less cumbersome.
 * Clean up the output from the writer.
     - http://opentypecookbook.com/style-guide.html
@@ -202,6 +200,7 @@ This snippet will compile the features, put them in the font, generate an OTF-CF
 	- The problem that I'm trying to solve is that sometimes the writer API is cumbersome when only a small value needs to be changed in some relatively static code.
 	- This would break backwards compatibility with .fea since it doesn't support inline comments.
 * Write better documentation.
+	- need ssXX name syntax documentation.
 	- How to use as a module.
 	- Writer API
 	- More examples: .sc, complex contextual using glyph.note, quantum random

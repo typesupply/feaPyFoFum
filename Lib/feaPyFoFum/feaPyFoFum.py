@@ -85,7 +85,8 @@ def _compileFeatureText(text, font, relativePath=None, verbose=False, recursionD
         else:
             raise FeaPyFoFumError("Maximum reference file recursion depth exceeded.")
     # compile
-    text = _executeFeatureText(text, font, verbose=verbose)
+    namespace = {}
+    text = _executeFeatureText(text, font, namespace, verbose=verbose)
     return text, referencedFiles
 
 
@@ -178,7 +179,7 @@ def _stripComments(text):
 # .fea Execution
 # --------------
 
-def _executeFeatureText(text, font, verbose=False):
+def _executeFeatureText(text, font, namespace, verbose=False):
     """
     Compile the text in a feature file by retaining
     static lines and executing dynamic lines into
@@ -191,7 +192,7 @@ def _executeFeatureText(text, font, verbose=False):
         if stripeddLine == "# >>>":
             codeBlock = []
         elif stripeddLine == "# <<<":
-            processed += _executeCodeBlock(codeBlock, font, verbose)
+            processed += _executeCodeBlock(codeBlock, font, namespace, verbose)
             codeBlock = None
         elif codeBlock is not None:
             codeBlock.append(line)
@@ -200,7 +201,7 @@ def _executeFeatureText(text, font, verbose=False):
     return "\n".join(processed)
 
 
-def _executeCodeBlock(codeBlock, font, verbose):
+def _executeCodeBlock(codeBlock, font, namespace, verbose):
     """
     Process the code block and return the resulting lines.
     """
@@ -208,10 +209,8 @@ def _executeCodeBlock(codeBlock, font, verbose):
     code, whitespace, constantIndent = _extractCodeFromCodeBlock(codeBlock)
     # execute
     writer = FeaSyntaxWriter(whitespace=whitespace)
-    namespace = dict(
-        font=font,
-        writer=writer
-    )
+    namespace["font"] = font
+    namespace["writer"] = writer
     output, errors = _executeCodeInNamespace(code, namespace)
     # compile the text
     lines = []
