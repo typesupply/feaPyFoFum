@@ -555,6 +555,37 @@ class FeaSyntaxWriter(object):
         self._identifierStack.append("classDefinition")
         return text
 
+    # markClass definition
+
+    def formatMarkClassDefinition(self, members, anchor, name):
+        return "markClass {members} {anchor} {name};".format(
+            members=self._flattenClass(members),
+            anchor=self._formatAnchorDefinition(anchor),
+            name=name,
+        )
+
+    def markClassDefinition(self, members, anchor, name):
+        d = dict(
+            identifier="markClassDefinition",
+            members=members,
+            anchor=anchor,
+            name=name,
+        )
+        self._content.append(d)
+
+    def _markClassDefinition(self, members, anchor, name):
+        text = self._handleBreakBefore("markClassDefinition")
+        text.append(self.formatMarkClassDefinition(members, anchor, name))
+        self._indentText(text)
+        self._identifierStack.append("markClassDefinition")
+        return text
+
+    def _formatAnchorDefinition(self, anchor):
+        return "<anchor {x} {y}>".format(
+            x=int(anchor[0]),
+            y=int(anchor[1]),
+        )
+
     # feature
 
     def feature(self, name):
@@ -605,6 +636,26 @@ class FeaSyntaxWriter(object):
         self._indentText(s)
         text.extend(s)
         self._identifierStack.append("lookup")
+        return text
+
+    def lookupflag(self, flags):
+        """
+        flags should be a iterable with one or several items from
+        ["RightToLeft", "IgnoreBaseGlyphs", "IgnoreLigatures", "IgnoreMarks", MarkAttachmentType <glyph class name>, UseMarkFilteringSet <glyph class name>]
+        """
+        # XXX all lookup flags need to be regestered at once for a given lookup
+        # XXX maybe this could be more flexible and different flags could be added att diferent times (?)
+        d = dict(
+            identifier="lookupflag",
+            flags=flags
+        )
+        self._content.append(d)
+
+    def _lookupflag(self, flags):
+        text = self._handleBreakBefore("lookupflag")
+        text.append("lookupflag %s;" % " ".join(flags))
+        self._indentText(text)
+        self._identifierStack.append("lookupflag")
         return text
 
     # feature reference
@@ -847,7 +898,130 @@ class FeaSyntaxWriter(object):
         self._identifierStack.append("positionPair")
         return text
 
+    # position mark to base
+
+    def formatPositionMarkToBase(self, target, anchor, markClass):
+        return self._formatPositionMarkBasic("base", target, [(anchor, markClass)])
+
+    def positionMarkToBase(self, target, anchor, markClass):
+        """
+        Ouput a GPOS LookupType 4 rule
+        >>> position base [a e o u] <anchor 250 450> mark @TOP_MARKS;
+
+        'target' argument should be a glyph name of a list of glyph names
+        'anchor' should be a tuples representing anchor position (x, y)
+        'markClass' should be a string
+        """
+        d = dict(
+            identifier="positionMarkToBase",
+            target=target,
+            anchor=anchor,
+            markClass=markClass,
+        )
+        self._content.append(d)
+
+    def _positionMarkToBase(self, target, anchor, markClass):
+        text = self._handleBreakBefore("positionMarkToBase")
+        text.append(
+            self.formatPositionMarkToBase(
+                target,
+                anchor,
+                markClass
+            )
+        )
+        self._indentText(text)
+        self._identifierStack.append("positionMarkToBase")
+        return text
+
+    # position mark to mark
+
+    def formatPositionMarkToMark(self, target, anchor, markClass):
+        return self._formatPositionMarkBasic("mark", target, [(anchor, markClass)])
+
+    def positionMarkToMark(self, target, anchor, markClass):
+        """
+        Ouput a GPOS LookupType 6 rule
+        >>> position mark hamzabelow <anchor 0 -30O> mark @AR_BOTTOM_MARKS;
+
+        'target' argument should be a glyph name of a list of glyph names
+        'anchor' should be a tuples representing anchor position (x, y)
+        'markClass' should be a string
+        """
+        d = dict(
+            identifier="positionMarkToMark",
+            target=target,
+            anchor=anchor,
+            markClass=markClass,
+        )
+        self._content.append(d)
+
+    def _positionMarkToMark(self, target, anchor, markClass):
+        text = self._handleBreakBefore("positionMarkToMark")
+        text.append(
+            self.formatPositionMarkToMark(
+                target,
+                anchor,
+                markClass
+            )
+        )
+        self._indentText(text)
+        self._identifierStack.append("positionMarkToMark")
+        return text
+
+    # position mark to ligature
+
+    def formatPositionMarkToLigature(self, target, anchor_data):
+        return self._formatPositionMarkBasic("ligature", target, anchor_data)
+
+    def positionMarkToLigature(self, target, anchor_data):
+        """
+        Ouput a GPOS LookupType 5 rule
+        >>>  position ligature lam.init_alef.fina <anchor 500 800> mark @AR_TOP_MARKS ligComponent <anchor 100 800> mark @AR_TOP_MARKS;
+
+        'target' argument should be a glyph name of a list of glyph names
+        'anchor_data' should be a list of tuples representing anchor positions and the associtated markClass like [((x, y), @markClassName)]
+        """
+        d = dict(
+            identifier="positionMarkToLigature",
+            target=target,
+            anchor_data=anchor_data
+        )
+        self._content.append(d)
+
+    def _positionMarkToLigature(self, target, anchor_data):
+        text = self._handleBreakBefore("positionMarkToLigature")
+        text.append(
+            self.formatPositionMarkToLigature(
+                target,
+                anchor_data
+            )
+        )
+        self._indentText(text)
+        self._identifierStack.append("positionMarkToLigature")
+        return text
+
+    def _formatPositionMarkBasic(self, kind, target, anchor_data):
+        marks = ["{anchor} mark {markClass}".format(anchor=self._formatAnchorDefinition(anchor), markClass=markClass) for anchor, markClass in anchor_data]
+        return "position {kind} {target} {marks};".format(
+            kind=kind,
+            target=self._flattenClass(target),
+            marks=" ligComponent ".join(marks)
+        )
+
     # subtable
+
+    def subtable(self):
+        d = dict(
+            identifier="subtable",
+        )
+        self._content.append(d)
+
+    def _subtable(self):
+        text = self._handleBreakBefore("subtable")
+        text.append("subtable;")
+        self._indentText(text)
+        self._identifierStack.append("subtable")
+        return text
 
     # stylistic set
 
