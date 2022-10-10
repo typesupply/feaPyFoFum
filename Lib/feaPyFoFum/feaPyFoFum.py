@@ -1,11 +1,10 @@
 from __future__ import unicode_literals
 
-from fontTools.misc.py23 import *
 import os
 import sys
 import traceback
 import re
-from fontTools.misc.py23 import basestring, StringIO, open
+from io import StringIO
 
 
 class FeaPyFoFumError(Exception):
@@ -379,7 +378,7 @@ class FeaSyntaxWriter(object):
     # flattening
 
     def _flattenClass(self, members):
-        if isinstance(members, basestring):
+        if isinstance(members, str):
             return members
         return "[%s]" % " ".join(members)
 
@@ -703,7 +702,7 @@ class FeaSyntaxWriter(object):
     # substitution
 
     def _formatContextTarget(self, target, backtrack, lookahead):
-        if isinstance(target, basestring):
+        if isinstance(target, str):
             target = [target]
         needContextMarker = backtrack is not None or lookahead is not None
         fullTarget = []
@@ -723,7 +722,7 @@ class FeaSyntaxWriter(object):
     def formatSubstitution(self, target, substitution, backtrack=None, lookahead=None, choice=False):
         fullTarget = self._formatContextTarget(target, backtrack, lookahead)
         # substitution
-        if isinstance(substitution, basestring):
+        if isinstance(substitution, str):
             substitution = [substitution]
         if substitution is not None:
             if choice:
@@ -746,9 +745,9 @@ class FeaSyntaxWriter(object):
             )
 
     def substitution(self, target, substitution, backtrack=None, lookahead=None, choice=False):
-        if isinstance(target, basestring):
+        if isinstance(target, str):
             target = [target]
-        if isinstance(substitution, basestring):
+        if isinstance(substitution, str):
             substitution = [substitution]
         d = dict(
             identifier="substitution",
@@ -798,7 +797,7 @@ class FeaSyntaxWriter(object):
     # position single
 
     def formatPositionValue(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             return value
         return "<%s %s %s %s>" % value
 
@@ -825,7 +824,7 @@ class FeaSyntaxWriter(object):
         return self._formatPositionBasic(target, value, backtrack, lookahead)
 
     def positionSingle(self, target, value, backtrack=None, lookahead=None):
-        if isinstance(target, basestring):
+        if isinstance(target, str):
             target = [target]
         d = dict(
             identifier="positionSingle",
